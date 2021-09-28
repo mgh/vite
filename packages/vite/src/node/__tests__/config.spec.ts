@@ -67,6 +67,22 @@ describe('mergeConfig', () => {
     expect(mergeConfig(baseConfig, newConfig)).toEqual(mergedConfig)
   })
 
+  test('handles assetsExclude', () => {
+    const baseConfig: UserConfigExport = {
+      assetsExclude: 'some-string'
+    }
+
+    const newConfig: UserConfigExport = {
+      assetsExclude: ['some-other-string', /regexp?/]
+    }
+
+    const mergedConfig: UserConfigExport = {
+      assetsExclude: ['some-string', 'some-other-string', /regexp?/]
+    }
+
+    expect(mergeConfig(baseConfig, newConfig)).toEqual(mergedConfig)
+  })
+
   test('not handles alias not under `resolve`', () => {
     const baseConfig = {
       custom: {

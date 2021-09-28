@@ -132,6 +132,10 @@ export interface UserConfig {
    */
   assetsInclude?: string | RegExp | (string | RegExp)[]
   /**
+   * Specify additional picomatch patterns to be ignored as static assets.
+   */
+  assetsExclude?: string | RegExp | (string | RegExp)[]
+  /**
    * Server specific options, e.g. host, port, https...
    */
   server?: ServerOptions
@@ -365,8 +369,12 @@ export async function resolveConfig(
     ? path.resolve(resolvedRoot, config.cacheDir)
     : pkgPath && path.join(path.dirname(pkgPath), `node_modules/.vite`)
 
-  const assetsFilter = config.assetsInclude
+  const assetsIncludeFilter = config.assetsInclude
     ? createFilter(config.assetsInclude)
+    : () => false
+
+  const assetsExcludeFilter = config.assetsExclude
+    ? createFilter(undefined, config.assetsExclude)
     : () => false
 
   // create an internal resolver to be used in special scenarios, e.g.
@@ -441,7 +449,10 @@ export async function resolveConfig(
       PROD: isProduction
     },
     assetsInclude(file: string) {
-      return DEFAULT_ASSETS_RE.test(file) || assetsFilter(file)
+      return (
+        (DEFAULT_ASSETS_RE.test(file) || assetsIncludeFilter(file)) &&
+        assetsExcludeFilter(file)
+      )
     },
     logger,
     createResolver,
@@ -674,7 +685,10 @@ function mergeConfigRecursively(
       if (key === 'alias' && (rootPath === 'resolve' || rootPath === '')) {
         merged[key] = mergeAlias(existing, value)
         continue
-      } else if (key === 'assetsInclude' && rootPath === '') {
+      } else if (
+        (key === 'assetsInclude' || key === 'assetsExclude') &&
+        rootPath === ''
+      ) {
         merged[key] = [].concat(existing, value)
         continue
       } else if (key === 'noExternal' && existing === true) {

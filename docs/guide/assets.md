@@ -2,6 +2,7 @@
 
 - Related: [Public Base Path](./build#public-base-path)
 - Related: [`assetsInclude` config option](/config/#assetsinclude)
+- Related: [`assetsExclude` config option](/config/#assetsexclude)
 
 ## Importing Asset as URL
 

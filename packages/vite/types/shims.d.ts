@@ -105,6 +105,13 @@ declare module 'compression' {
   export default compression
 }
 
+declare module 'postcss-icss' {
+  import { Plugin } from 'postcss'
+
+  const plugin: Plugin
+  export default plugin
+}
+
 // LESS' types somewhat references this which doesn't make sense in Node,
 // so we have to shim it
 declare interface HTMLLinkElement {}

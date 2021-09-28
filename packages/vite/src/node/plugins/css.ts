@@ -703,6 +703,8 @@ async function compileCSS(
         }
       })
     )
+  } else {
+    postcssPlugins.unshift((await import('postcss-icss')).default)
   }
 
   if (!postcssPlugins.length) {
@@ -763,6 +765,12 @@ async function compileCSS(
         })}`
       }
       config.logger.warn(chalk.yellow(msg))
+    } else if (message.type === 'icss') {
+      if (!modules) {
+        modules = message.exportTokens
+      } else {
+        modules = { ...modules, ...message.exportTokens }
+      }
     }
   }
 
